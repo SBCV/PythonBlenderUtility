@@ -1,12 +1,11 @@
 # executes the module loader in blender
 import os
 import subprocess
+from shutil import copyfile
 from Utility.OS_Extension import get_first_valid_path
 from Utility.Config import Config
+from Utility.Logging_Extension import logger
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger()
 
 # ====== Warning when starting blender ======
 # "connect failed: No such file or directory"
@@ -29,8 +28,7 @@ logger = logging.getLogger()
 # ************************************************************************************
 
 
-def execute_blender_script(path_and_name_to_script_file,
-                           path_to_execute_config,
+def execute_blender_script(blender_script_ifp,
                            background_mode=True,
                            path_to_blend_file=None,
                            debug_output=False):
@@ -39,11 +37,20 @@ def execute_blender_script(path_and_name_to_script_file,
     # IS FLUSHED TO COMMAND LINE DURING EXECUTION
     # ****
 
-    execute_config = Config(path_to_config_file=path_to_execute_config)
+    logger.info('execute_blender_script: ...')
+    logger.vinfo('blender_script_ifp', blender_script_ifp)
+
+    parent_dp = os.path.dirname(os.path.realpath(__file__))
+    example_config_path = os.path.join(parent_dp, 'Config', 'blender_script_executor_example.cfg')
+    config_path = os.path.join(parent_dp, 'Config', 'blender_script_executor.cfg')
+    if not os.path.isfile(config_path):
+        copyfile(example_config_path, config_path)
+
+    blender_script_config = Config(path_to_config_file=config_path)
+    path_to_blender_list = blender_script_config.get_option_value(
+        'path_to_blender', list)
     path_to_blender = get_first_valid_path(
-        execute_config.get_option_value(
-            'path_to_blender', list)
-    )
+        path_to_blender_list)
 
     options = []
 
@@ -58,24 +65,23 @@ def execute_blender_script(path_and_name_to_script_file,
     if debug_output:
         options += ['--debug']
 
-    path_to_blender_scripts_parent_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    path_to_blender_scripts_parent_folder = os.path.dirname(os.path.realpath(__file__))
 
     # This calls the script Blender.BlenderUtility.Config_Blender_Environment.py,
     # which will add additional modules to the python path
     path_to_module_loader = os.path.join(
-        path_to_blender_scripts_parent_folder, 'BlenderUtility', 'Config_Blender_Environment.py')
+        path_to_blender_scripts_parent_folder, 'Blender_Library_Configuration.py')
+
     options += ['--python', path_to_module_loader]
 
-    path_to_blender_script = os.path.join(
-        path_to_blender_scripts_parent_folder, path_and_name_to_script_file)
-    options += ['--python', path_to_blender_script]
+    options += ['--python', blender_script_ifp]
 
     # options += ['--']  # this tells blender to treat the following arguments as custom arguments
     # options += ['--module_path_1', str('some_path')]
 
-    print('Call scripts in blender ... (' + path_to_blender + ')')
+    logger.info('Call scripts in blender ... (' + path_to_blender + ')')
     subprocess.call([path_to_blender] + options)
 
-
+    logger.info('execute_blender_script: Done')
 
 

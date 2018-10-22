@@ -102,7 +102,8 @@ def configure_scene_animation(frame_end_number, fps=12):
 def collect_camera_object_trajectory_information(virtual_camera_name,
                                                  render_stereo_camera,
                                                  stereo_camera_baseline,
-                                                 car_body_name):
+                                                 car_body_name,
+                                                 car_body_matrix_world_after_loading):
     logger.info('collect_camera_object_trajectory_information: ...')
     scene = bpy.context.scene
 
@@ -165,10 +166,12 @@ def collect_camera_object_trajectory_information(virtual_camera_name,
 
         # Make sure matrix world is up to date
         bpy.context.scene.update()
-        object_matrix_world = np.array(car_body.matrix_world)
+        object_matrix_world_at_trajectory = np.array(car_body.matrix_world)
+        matrix_world_relative_to_initial_pose = object_matrix_world_at_trajectory.dot(
+            car_body_matrix_world_after_loading.inverted())
 
         camera_object_trajectory.set_object_matrix_world(
-            current_frame_name, object_matrix_world)
+            current_frame_name, matrix_world_relative_to_initial_pose)
 
     bpy.context.scene.frame_set(1)
     logger.info('collect_camera_object_trajectory_information: Done')
@@ -270,6 +273,7 @@ def write_cameras_as_nvm(camera_object_trajectory, camera_trajectory_nvm_file_pa
 def write_animation_ground_truth_to_disc(
         virtual_camera_name,
         car_body_name,
+        car_body_matrix_world_after_loading,
         path_to_output_render_folder,
         output_file_folder='ground_truth_files',
         output_animation_transformation_txt_file_name='animation_transformations.txt',
@@ -308,7 +312,8 @@ def write_animation_ground_truth_to_disc(
         virtual_camera_name,
         render_stereo_camera,
         stereo_camera_baseline,
-        car_body_name)
+        car_body_name,
+        car_body_matrix_world_after_loading)
 
     if write_animation_ground_truth_mesh:
         store_animation_ground_truth_mesh(

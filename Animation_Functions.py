@@ -15,6 +15,7 @@ from Utility.Types.Camera import Camera
 from Utility.Types.Camera_Object_Trajectory import CameraObjectTrajectory
 from Utility.Types.Point import Point
 from Utility.Types.Stereo_Camera import StereoCamera
+from Utility.OS_Extension import mkdir_safely
 
 
 def clear_animation_data(object_name):
@@ -294,19 +295,7 @@ def write_animation_ground_truth_to_disc(
     logger.info('write_animation_ground_truth_to_disc: ...')
     path_to_ground_truth_folder = os.path.join(
         path_to_output_render_folder, output_file_folder)
-    if not os.path.isdir(path_to_ground_truth_folder):
-        os.mkdir(path_to_ground_truth_folder)
-    path_ground_truth_mesh_folder = os.path.join(
-        path_to_ground_truth_folder, output_ground_truth_mesh_folder)
-    if not os.path.isdir(path_ground_truth_mesh_folder):
-        os.mkdir(path_ground_truth_mesh_folder)
-    animation_transformation_file_path = os.path.join(
-        path_to_ground_truth_folder, output_animation_transformation_txt_file_name)
-    camera_trajectory_ply_file_path = os.path.join(
-        path_to_ground_truth_folder, output_camera_trajectory_ply_file_name)
-    camera_trajectory_nvm_file_path = os.path.join(
-        path_to_ground_truth_folder, output_camera_trajectory_nvm_file_name)
-
+    mkdir_safely(path_to_ground_truth_folder)
 
     camera_object_trajectory = collect_camera_object_trajectory_information(
         virtual_camera_name,
@@ -316,6 +305,10 @@ def write_animation_ground_truth_to_disc(
         car_body_matrix_world_after_loading)
 
     if write_animation_ground_truth_mesh:
+        path_ground_truth_mesh_folder = os.path.join(
+            path_to_ground_truth_folder, output_ground_truth_mesh_folder)
+        if not os.path.isdir(path_ground_truth_mesh_folder):
+            os.mkdir(path_ground_truth_mesh_folder)
         store_animation_ground_truth_mesh(
             car_body_name,
             path_ground_truth_mesh_folder,
@@ -326,6 +319,13 @@ def write_animation_ground_truth_to_disc(
             car_model_tire_suffix_bl,
             car_model_tire_suffix_br
         )
+
+    animation_transformation_file_path = os.path.join(
+        path_to_ground_truth_folder, output_animation_transformation_txt_file_name)
+    camera_trajectory_ply_file_path = os.path.join(
+        path_to_ground_truth_folder, output_camera_trajectory_ply_file_name)
+    camera_trajectory_nvm_file_path = os.path.join(
+        path_to_ground_truth_folder, output_camera_trajectory_nvm_file_name)
 
     # In Blender the stereo camera uses by default the position
     # of the monocular camera as left camera

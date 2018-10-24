@@ -1,6 +1,5 @@
-import sys, os
-from Utility.Logging_Extension import logger
-from Utility.Config import Config
+import os
+import sys
 from shutil import copyfile
 
 # ************************************************************************************
@@ -13,10 +12,10 @@ ANACONDA = 'ANACONDA'
 def add_paths_to_system_path_if_necessary(some_paths):
     for some_path in some_paths:
         if some_path not in sys.path:
-            logger.info("Appending to PYTHONPATH: " + str(some_path))
+            print("Appending to PYTHONPATH: " + str(some_path))
             sys.path.append(some_path)
         else:
-            logger.info("Found the following path already in PYTHONPATH" + str(some_path))
+            print("Found the following path already in PYTHONPATH" + str(some_path))
 
 
 def configure_libs_for_blender():
@@ -24,6 +23,13 @@ def configure_libs_for_blender():
     This method is called by "Blender_Script_Executor"
     :return:
     """
+
+    # Add the parent folder of the BlenderUtility to the python path
+    # in order to enable acess the BlenderUtility package and all subpackages (e.g. Utility)
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
+    from Utility.Logging_Extension import logger
+    from Utility.Config import Config
 
     additional_system_paths = []
 

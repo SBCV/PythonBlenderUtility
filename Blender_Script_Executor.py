@@ -52,6 +52,11 @@ def execute_blender_script(blender_script_ifp,
     path_to_blender = get_first_valid_path(
         path_to_blender_list)
 
+    if path_to_blender is None:
+    	logger.info('No valid blender path provided!')
+    	logger.info('Adjust the value in Config/blender_script_executor.cfg')
+    	assert False
+
     options = []
 
     if path_to_blend_file is not None:

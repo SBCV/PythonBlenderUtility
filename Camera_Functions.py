@@ -6,7 +6,7 @@ from Utility.Logging_Extension import logger
 
 
 def get_calibration_mat(blender_camera):
-    logger.info('get_calibration_mat: ...')
+    #logger.info('get_calibration_mat: ...')
     scene = bpy.context.scene
     render_resolution_width = scene.render.resolution_x
     render_resolution_height = scene.render.resolution_y
@@ -23,7 +23,7 @@ def get_calibration_mat(blender_camera):
     calibration_mat = Camera.compute_calibration_mat(
         focal_length_in_pixel, cx=p_x, cy=p_y)
 
-    logger.info('get_calibration_mat: Done')
+    #logger.info('get_calibration_mat: Done')
     return calibration_mat
 
 

@@ -125,9 +125,9 @@ def collect_camera_object_trajectory_information(virtual_camera_name,
         bpy.context.scene.frame_set(corrected_frame_index)
 
         current_frame_stem = 'frame' + str(corrected_frame_index).zfill(5)
-        current_frame_name =  current_frame_stem + '.jpg'
+        current_frame_name = current_frame_stem + '.jpg'
 
-        logger.vinfo('current_frame_name', current_frame_name)
+        #logger.vinfo('current_frame_name', current_frame_name)
 
         # Only if the objects have a scale of 1,
         # the 3x3 part of the corresponding matrix_world contains a pure rotation
@@ -139,7 +139,7 @@ def collect_camera_object_trajectory_information(virtual_camera_name,
         calibration_mat = get_calibration_mat(blender_camera)
         rotated_camera_matrix_around_x_by_180 = get_computer_vision_camera_matrix(
             blender_camera)
-        logger.vinfo('rotated_camera_matrix_around_x_by_180', rotated_camera_matrix_around_x_by_180)
+        #logger.vinfo('rotated_camera_matrix_around_x_by_180', rotated_camera_matrix_around_x_by_180)
 
         cam = Camera()
         cam.set_4x4_cam_to_world_mat(rotated_camera_matrix_around_x_by_180)

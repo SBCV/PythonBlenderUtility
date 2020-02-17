@@ -19,6 +19,7 @@ def high_level_object_import_from_other_blend_file(blend_file, folder_name, targ
     #   Option: bpy.ops.wm.append()     # the object is copied and can be edited
 
     if not os.path.isfile(blend_file):
+        logger.vinfo('blend_file', blend_file)
         assert False    # Invalid Input Path
     file_path = os.path.join(blend_file, folder_name, target_name)
     directory = ensure_trailing_slash(os.path.join(blend_file, folder_name))
